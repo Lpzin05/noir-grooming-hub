@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { Menu, X, Scissors } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Menu, X, Scissors, UserCircle } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
 const Navbar: React.FC = () => {
@@ -27,9 +28,15 @@ const Navbar: React.FC = () => {
             <NavLink href="#contact">Contato</NavLink>
           </div>
           
-          <button className="hidden md:block neon-button">
-            Agendar Agora
-          </button>
+          <div className="hidden md:flex items-center gap-4">
+            <Link to="/barber-dashboard" className="flex items-center gap-1 text-barbershop-text hover:text-barbershop-neonblue transition-colors">
+              <UserCircle size={18} />
+              <span>Área do Barbeiro</span>
+            </Link>
+            <button className="neon-button">
+              Agendar Agora
+            </button>
+          </div>
 
           {/* Mobile menu button */}
           <button 
@@ -50,6 +57,14 @@ const Navbar: React.FC = () => {
             <MobileNavLink href="#barbers" onClick={toggleMenu}>Barbeiros</MobileNavLink>
             <MobileNavLink href="#testimonials" onClick={toggleMenu}>Depoimentos</MobileNavLink>
             <MobileNavLink href="#contact" onClick={toggleMenu}>Contato</MobileNavLink>
+            <Link 
+              to="/barber-dashboard" 
+              className="text-barbershop-text hover:text-barbershop-neonblue transition-colors px-4 py-2 flex items-center gap-2"
+              onClick={toggleMenu}
+            >
+              <UserCircle size={18} />
+              <span>Área do Barbeiro</span>
+            </Link>
             <button className="neon-button w-full mt-2">
               Agendar Agora
             </button>
