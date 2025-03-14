@@ -18,7 +18,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/login" replace />;
   }
 
-  // If the route requires admin privileges and the user is not an admin
+  // Se a rota requer privilégios de administrador e o usuário não é um administrador
   if (requiresAdmin && user?.role !== 'admin') {
     return <Navigate to="/" replace />;
   }

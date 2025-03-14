@@ -14,7 +14,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-// Mock data for services
+// Dados de exemplo para serviços
 const initialServices = [
   { id: 1, name: "Corte de Cabelo", price: "R$ 50", duration: "30 min" },
   { id: 2, name: "Barba Completa", price: "R$ 40", duration: "25 min" },
@@ -37,7 +37,7 @@ const ManagePrices = () => {
   };
 
   const handleSavePrice = (id: number) => {
-    // Validate price input
+    // Validar a entrada de preço
     if (!editedPrice.trim() || isNaN(Number(editedPrice))) {
       toast({
         title: "Preço inválido",

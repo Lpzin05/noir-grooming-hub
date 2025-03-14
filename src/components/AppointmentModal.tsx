@@ -20,13 +20,13 @@ import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
 
-// Time slots for the appointment
+// Horários disponíveis para agendamento
 const timeSlots = [
   "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
   "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"
 ];
 
-// Services offered by the barbershop
+// Serviços oferecidos pela barbearia
 const services = [
   { id: 1, name: "Corte de Cabelo", price: "R$ 50", duration: "30 min", icon: Scissors },
   { id: 2, name: "Barba Completa", price: "R$ 40", duration: "25 min" },
@@ -35,7 +35,7 @@ const services = [
   { id: 5, name: "Tratamento Facial", price: "R$ 70", duration: "40 min" }
 ];
 
-// Barbers available for appointments
+// Barbeiros disponíveis para agendamentos
 const barbers = [
   { id: 1, name: "Carlos Silva" },
   { id: 2, name: "André Martins" },
@@ -88,13 +88,13 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ open, onOpenChange 
   };
 
   const handleBooking = () => {
-    // In a real application, you would send this data to your backend
+    // Em uma aplicação real, você enviaria esses dados para o backend
     toast({
       title: "Agendamento Confirmado!",
       description: `Seu agendamento foi confirmado para ${date ? format(date, 'dd/MM/yyyy', { locale: ptBR }) : ''} às ${selectedTimeSlot}.`,
     });
     
-    // Reset form and close modal
+    // Resetar formulário e fechar modal
     setStep(1);
     setSelectedTimeSlot(null);
     setSelectedService(null);
@@ -113,7 +113,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ open, onOpenChange 
           </DialogDescription>
         </DialogHeader>
         
-        {/* Step indicators */}
+        {/* Indicadores de etapa */}
         <div className="flex justify-center mb-6">
           {[1, 2, 3].map((stepNumber) => (
             <div 
@@ -130,7 +130,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ open, onOpenChange 
           ))}
         </div>
 
-        {/* Step 1: Select date and time */}
+        {/* Etapa 1: Selecionar data e hora */}
         {step === 1 && (
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row gap-4">
@@ -198,7 +198,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ open, onOpenChange 
           </div>
         )}
 
-        {/* Step 2: Select service and barber */}
+        {/* Etapa 2: Selecionar serviço e barbeiro */}
         {step === 2 && (
           <div className="space-y-6">
             <div>
@@ -267,7 +267,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ open, onOpenChange 
           </div>
         )}
 
-        {/* Step 3: Enter personal details */}
+        {/* Etapa 3: Inserir dados pessoais */}
         {step === 3 && (
           <div className="space-y-6">
             <div className="space-y-4">
