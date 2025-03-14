@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Scissors, User, X, LogOut, Home, Calendar } from 'lucide-react';
+import { Check, Scissors, User, X, LogOut, Home, Calendar, DollarSign, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -13,6 +13,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import ManageBarbers from '@/components/dashboard/ManageBarbers';
+import ManagePrices from '@/components/dashboard/ManagePrices';
 
 // Mock data para demonstração
 const mockClients = [
@@ -28,6 +32,7 @@ const BarberDashboard = () => {
   const [clients, setClients] = useState(mockClients);
   const [activeTab, setActiveTab] = useState('appointments');
   const { user, logout } = useAuth();
+  const { toast } = useToast();
 
   // Função para alterar o status de confirmação
   const toggleConfirmation = (id: number) => {
@@ -36,6 +41,15 @@ const BarberDashboard = () => {
         client.id === id ? { ...client, confirmed: !client.confirmed } : client
       )
     );
+  };
+
+  // Função para cancelar um agendamento
+  const cancelAppointment = (id: number) => {
+    setClients(prevClients => prevClients.filter(client => client.id !== id));
+    toast({
+      title: "Agendamento cancelado",
+      description: "O agendamento foi cancelado com sucesso",
+    });
   };
 
   return (
@@ -80,99 +94,136 @@ const BarberDashboard = () => {
           </h2>
         </div>
         
-        <div className="flex mb-6 border-b border-gray-800">
-          <button
-            className={`px-4 py-2 font-medium ${activeTab === 'appointments' ? 'text-barbershop-neonblue border-b-2 border-barbershop-neonblue' : 'text-gray-400'}`}
-            onClick={() => setActiveTab('appointments')}
-          >
-            Agendamentos
-          </button>
-          <button
-            className={`px-4 py-2 font-medium ${activeTab === 'clients' ? 'text-barbershop-neonblue border-b-2 border-barbershop-neonblue' : 'text-gray-400'}`}
-            onClick={() => setActiveTab('clients')}
-          >
-            Clientes
-          </button>
-        </div>
+        <Tabs defaultValue="appointments" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 bg-barbershop-lightgray border border-gray-800">
+            <TabsTrigger 
+              value="appointments" 
+              className="data-[state=active]:bg-barbershop-neonblue data-[state=active]:text-white"
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Agendamentos
+            </TabsTrigger>
+            <TabsTrigger 
+              value="clients" 
+              className="data-[state=active]:bg-barbershop-neonblue data-[state=active]:text-white"
+            >
+              <User className="w-4 h-4 mr-2" />
+              Clientes
+            </TabsTrigger>
+            <TabsTrigger 
+              value="barbers" 
+              className="data-[state=active]:bg-barbershop-neonblue data-[state=active]:text-white"
+            >
+              <Users className="w-4 h-4 mr-2" />
+              Barbeiros
+            </TabsTrigger>
+            <TabsTrigger 
+              value="prices" 
+              className="data-[state=active]:bg-barbershop-neonblue data-[state=active]:text-white"
+            >
+              <DollarSign className="w-4 h-4 mr-2" />
+              Preços
+            </TabsTrigger>
+          </TabsList>
 
-        {activeTab === 'appointments' && (
-          <div className="bg-barbershop-lightgray rounded-lg p-6 shadow-md border border-gray-800">
-            <div className="flex justify-between mb-4">
-              <h2 className="text-xl font-semibold">Agendamentos</h2>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-400">Total: {clients.length}</span>
-                <span className="text-sm text-green-500">Confirmados: {clients.filter(c => c.confirmed).length}</span>
+          <TabsContent value="appointments" className="mt-6">
+            <div className="bg-barbershop-lightgray rounded-lg p-6 shadow-md border border-gray-800">
+              <div className="flex justify-between mb-4">
+                <h2 className="text-xl font-semibold">Agendamentos</h2>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-400">Total: {clients.length}</span>
+                  <span className="text-sm text-green-500">Confirmados: {clients.filter(c => c.confirmed).length}</span>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableCaption>Lista de agendamentos</TableCaption>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Cliente</TableHead>
+                      <TableHead>Serviço</TableHead>
+                      <TableHead>Data</TableHead>
+                      <TableHead>Hora</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {clients.map((client) => (
+                      <TableRow key={client.id}>
+                        <TableCell className="font-medium">{client.name}</TableCell>
+                        <TableCell>{client.service}</TableCell>
+                        <TableCell>{client.date}</TableCell>
+                        <TableCell>{client.time}</TableCell>
+                        <TableCell>
+                          <span className={`px-2 py-1 rounded text-xs ${client.confirmed ? 'bg-green-900/30 text-green-500' : 'bg-yellow-900/30 text-yellow-500'}`}>
+                            {client.confirmed ? 'Confirmado' : 'Pendente'}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleConfirmation(client.id)}
+                              className={client.confirmed ? 'text-red-500 hover:text-red-400 hover:bg-red-950/30' : 'text-green-500 hover:text-green-400 hover:bg-green-950/30'}
+                            >
+                              {client.confirmed ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => cancelAppointment(client.id)}
+                              className="text-red-500 hover:text-red-400 hover:bg-red-950/30"
+                            >
+                              <span className="sr-only">Cancelar</span>
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
             </div>
+          </TabsContent>
 
-            <div className="overflow-x-auto">
-              <Table>
-                <TableCaption>Lista de agendamentos</TableCaption>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Cliente</TableHead>
-                    <TableHead>Serviço</TableHead>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Hora</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {clients.map((client) => (
-                    <TableRow key={client.id}>
-                      <TableCell className="font-medium">{client.name}</TableCell>
-                      <TableCell>{client.service}</TableCell>
-                      <TableCell>{client.date}</TableCell>
-                      <TableCell>{client.time}</TableCell>
-                      <TableCell>
-                        <span className={`px-2 py-1 rounded text-xs ${client.confirmed ? 'bg-green-900/30 text-green-500' : 'bg-yellow-900/30 text-yellow-500'}`}>
-                          {client.confirmed ? 'Confirmado' : 'Pendente'}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toggleConfirmation(client.id)}
-                          className={client.confirmed ? 'text-red-500 hover:text-red-400 hover:bg-red-950/30' : 'text-green-500 hover:text-green-400 hover:bg-green-950/30'}
-                        >
-                          {client.confirmed ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-        )}
+          <TabsContent value="clients" className="mt-6">
+            <div className="bg-barbershop-lightgray rounded-lg p-6 shadow-md border border-gray-800">
+              <div className="flex justify-between mb-4">
+                <h2 className="text-xl font-semibold">Lista de Clientes</h2>
+                <div className="text-sm text-gray-400">Total: {clients.length}</div>
+              </div>
 
-        {activeTab === 'clients' && (
-          <div className="bg-barbershop-lightgray rounded-lg p-6 shadow-md border border-gray-800">
-            <div className="flex justify-between mb-4">
-              <h2 className="text-xl font-semibold">Lista de Clientes</h2>
-              <div className="text-sm text-gray-400">Total: {clients.length}</div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {clients.map((client) => (
-                <div key={client.id} className="bg-barbershop-black p-4 rounded-lg border border-gray-800">
-                  <div className="flex items-start gap-3">
-                    <div className="bg-gray-800 rounded-full p-2">
-                      <User className="h-5 w-5 text-barbershop-neonblue" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">{client.name}</h3>
-                      <p className="text-sm text-gray-400">Último serviço: {client.service}</p>
-                      <p className="text-xs text-gray-500 mt-1">Em {client.date} às {client.time}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {clients.map((client) => (
+                  <div key={client.id} className="bg-barbershop-black p-4 rounded-lg border border-gray-800">
+                    <div className="flex items-start gap-3">
+                      <div className="bg-gray-800 rounded-full p-2">
+                        <User className="h-5 w-5 text-barbershop-neonblue" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium">{client.name}</h3>
+                        <p className="text-sm text-gray-400">Último serviço: {client.service}</p>
+                        <p className="text-xs text-gray-500 mt-1">Em {client.date} às {client.time}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          </TabsContent>
+
+          <TabsContent value="barbers" className="mt-6">
+            <ManageBarbers />
+          </TabsContent>
+
+          <TabsContent value="prices" className="mt-6">
+            <ManagePrices />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
