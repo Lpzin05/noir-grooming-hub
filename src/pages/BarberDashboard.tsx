@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Scissors, User, X } from 'lucide-react';
+import { Check, Scissors, User, X, LogOut, Home, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Mock data para demonstração
 const mockClients = [
@@ -26,6 +27,7 @@ const BarberDashboard = () => {
   const navigate = useNavigate();
   const [clients, setClients] = useState(mockClients);
   const [activeTab, setActiveTab] = useState('appointments');
+  const { user, logout } = useAuth();
 
   // Função para alterar o status de confirmação
   const toggleConfirmation = (id: number) => {
@@ -37,20 +39,45 @@ const BarberDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-barbershop-black text-white pt-24 pb-12 px-4">
-      <div className="container mx-auto max-w-6xl">
+    <div className="min-h-screen bg-barbershop-black text-white pt-16 pb-12">
+      <div className="border-b border-gray-800 bg-barbershop-lightgray/40">
+        <div className="container mx-auto flex items-center justify-between py-3 px-4">
+          <div className="flex items-center gap-2">
+            <Scissors className="text-barbershop-neonblue h-6 w-6" />
+            <h1 className="text-xl font-bold">NOIR</h1>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="text-barbershop-textmuted text-sm mr-2">
+              Olá, <span className="text-white">{user?.name || 'Barbeiro'}</span>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate('/')}
+              className="border-gray-700 text-white hover:bg-barbershop-lightgray flex items-center gap-1"
+            >
+              <Home className="h-4 w-4" />
+              <span className="hidden sm:inline">Início</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={logout}
+              className="border-gray-700 text-red-500 hover:bg-barbershop-lightgray hover:text-red-400 flex items-center gap-1"
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline">Sair</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+      
+      <div className="container mx-auto max-w-6xl pt-6 px-4">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Scissors className="text-barbershop-neonblue h-8 w-8" />
+          <h2 className="text-3xl font-bold flex items-center gap-2">
+            <Calendar className="text-barbershop-neonblue h-8 w-8" />
             Painel do Barbeiro
-          </h1>
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/')}
-            className="border-barbershop-neonblue text-barbershop-neonblue hover:bg-barbershop-neonblue hover:text-white"
-          >
-            Voltar para o site
-          </Button>
+          </h2>
         </div>
         
         <div className="flex mb-6 border-b border-gray-800">

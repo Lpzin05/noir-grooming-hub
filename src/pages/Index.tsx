@@ -11,35 +11,13 @@ import AppointmentModal from '@/components/AppointmentModal';
 const Index = () => {
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
 
-  // Detect clicks on "Agendar" buttons and open the modal
-  React.useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      
-      // Check if the clicked element or its parent has the text "Agendar"
-      const hasAgendarText = (element: HTMLElement): boolean => {
-        const text = element.textContent?.toLowerCase() || '';
-        return text.includes('agendar');
-      };
-      
-      // Check the target and its parent elements
-      let currentElement: HTMLElement | null = target;
-      while (currentElement) {
-        if (currentElement.tagName === 'BUTTON' && hasAgendarText(currentElement)) {
-          setIsAppointmentModalOpen(true);
-          break;
-        }
-        currentElement = currentElement.parentElement;
-      }
-    };
-
-    document.addEventListener('click', handleClick);
-    return () => document.removeEventListener('click', handleClick);
-  }, []);
+  const openAppointmentModal = () => {
+    setIsAppointmentModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-barbershop-black text-white">
-      <Navbar />
+      <Navbar openAppointmentModal={openAppointmentModal} />
       <Hero />
       <Services />
       <BarberProfiles />
